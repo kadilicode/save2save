@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Contact Collector</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #25D366;
+            --secondary-color: #075E54;
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-main: #1c1e21;
+            --danger: #ff4d4d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        /* Header Area */
+        header {
+            text-align: center;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: white;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 20px rgba(37, 211, 102, 0.2);
+        }
+
+        .stats-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            margin-top: 12px;
+            font-weight: 500;
+        }
+
+        /* Card Elements */
+        .card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #f0f0f0;
+            border-radius: 12px;
+            transition: 0.3s;
+            outline: none;
+            font-size: 1rem;
+        }
+
+        input:focus {
+            border-color: var(--primary-color);
+            background-color: #fff;
+        }
+
+        /* Buttons */
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-save {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-save:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3); }
+
+        .btn-download {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        /* Contact List */
+        #searchInput {
+            margin-bottom: 15px;
+            background: #f9f9f9;
+        }
+
+        .contact-item {
+            background: #fff;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #eee;
+            transition: 0.2s;
+        }
+
+        .contact-item:hover {
+            border-color: var(--primary-color);
+        }
+
+        .contact-info h4 { margin: 0; font-size: 1rem; }
+        .contact-info p { font-size: 0.85rem; color: #777; margin-top: 2px; }
+
+        .btn-delete {
+            background: #fff0f0;
+            color: var(--danger);
+            width: 35px;
+            height: 35px;
+            border-radius: 10px;
+        }
+
+        .btn-delete:hover { background: var(--danger); color: white; }
+
+        /* Instructions */
+        .info-box {
+            background: #eef9f1;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: #444;
+        }
+
+        .info-box h4 { color: var(--secondary-color); margin-bottom: 8px; }
+        .info-box ul { padding-left: 18px; }
+
+        @media (max-width: 480px) {
+            body { padding: 10px; }
+            header { padding: 20px 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1><i class="fab fa-whatsapp"></i> SAVE2SAVE  🇹🇿</h1>
+        <div class="stats-badge" id="countBadge">0 Contacts Saved</div>
+    </header>
+
+    <div class="card">
+        <h3><i class="fas fa-plus-circle"></i> Add New Contact</h3>
+        <form id="contactForm">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="name" required placeholder="Enter full name">
+            </div>
+            <div class="form-group">
+                <label>WhatsApp Number</label>
+                <input type="tel" id="phone" required placeholder="e.g. 07XXXXXXXX">
+            </div>
+            <button type="submit" class="btn-save">
+                <i class="fas fa-user-check"></i> Save Contact
+            </button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h3><i class="fas fa-address-book"></i> Contact List</h3>
+        <input type="text" id="searchInput" placeholder="Search by name..." onkeyup="renderContacts()">
+        <div id="contactList" style="max-height: 300px; overflow-y: auto; margin-bottom: 15px;">
+            </div>
+        <button class="btn-download" onclick="downloadVCF()">
+            <i class="fas fa-cloud-download-alt"></i> Download .vcf File
+        </button>
+    </div>
+
+    <div class="info-box">
+        <h4><i class="fas fa-lightbulb"></i> Quick Guide:</h4>
+        <ul>
+            <li>Enter the person's name and WhatsApp number.</li>
+            <li>Once the list is ready, click <b>Download .vcf File</b>.</li>
+            <li>Open the file on your phone to import all numbers at once.</li>
+            <li>Refresh your WhatsApp contact list to see them!</li>
+        </ul>
+        <h4>created by kadilidev 2026</h4>
+    </div>
+</div>
+
+<script>
+    let contacts = JSON.parse(localStorage.getItem('wa_contacts')) || [];
+
+    function renderContacts() {
+        const listDiv = document.getElementById('contactList');
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const filtered = contacts.filter(c => c.name.toLowerCase().includes(searchTerm));
+        
+        document.getElementById('countBadge').innerText = `${contacts.length} Contacts Saved`;
+
+        if (filtered.length === 0) {
+            listDiv.innerHTML = '<p style="text-align:center; color:#999; padding: 20px;">No contacts found.</p>';
+            return;
+        }
+
+        listDiv.innerHTML = '';
+        filtered.forEach((contact, index) => {
+            const div = document.createElement('div');
+            div.className = 'contact-item';
+            div.innerHTML = `
+                <div class="contact-info">
+                    <h4>${contact.name}</h4>
+                    <p><i class="fas fa-phone"></i> ${contact.phone}</p>
+                </div>
+                <button onclick="deleteContact(${index})" class="btn-delete" title="Delete">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            `;
+            listDiv.appendChild(div);
+        });
+    }
+
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        let rawPhone = document.getElementById('phone').value.replace(/\D/g, '');
+        
+        // Auto-format for international standard (Example for Tanzania 255)
+        // You can remove this logic if you want raw numbers
+        if (rawPhone.startsWith('0')) {
+            rawPhone = '255' + rawPhone.substring(1);
+        } else if (rawPhone.length === 9) {
+            rawPhone = '255' + rawPhone;
+        }
+
+        const newContact = {
+            name: document.getElementById('name').value.trim(),
+            phone: rawPhone
+        };
+
+        contacts.push(newContact);
+        localStorage.setItem('wa_contacts', JSON.stringify(contacts));
+        this.reset();
+        renderContacts();
+    });
+
+    function deleteContact(index) {
+        if (confirm('Remove this contact?')) {
+            contacts.splice(index, 1);
+            localStorage.setItem('wa_contacts', JSON.stringify(contacts));
+            renderContacts();
+        }
+    }
+
+    function downloadVCF() {
+        if (contacts.length === 0) return alert('Your list is empty!');
+        
+        let vcfBody = contacts.map(c => 
+            `BEGIN:VCARD\nVERSION:3.0\nFN:${c.name}\nTEL;TYPE=CELL:${c.phone}\nEND:VCARD`
+        ).join('\n\n');
+
+        const blob = new Blob([vcfBody], { type: 'text/vcard' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'WhatsApp_Batch.vcf';
+        link.click();
+        window.URL.revokeObjectURL(url);
+    }
+
+    // Initial load
+    renderContacts();
+</script>
+
+</body>
+</html>
